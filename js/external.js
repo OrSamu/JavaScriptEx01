@@ -1,70 +1,89 @@
+function Disc(x, y, radius) {
+    this.x = x;
+    this.y = y;
+    this.radius = 20;
+    this.visible = true;
+    this.x_direction = (Math.round(Math.random()) * 2 - 1)*10;     //positive or negative 
+    this.y_direction = (Math.round(Math.random()) * 2 - 1)*10;     //positive or negative
+}
 
-    // get rectangle values
-    const canvas_rectangle = document.querySelector('#rectangle');
-    const rectangle_width = canvas_rectangle.getAttribute("width") - 100;
-    const rectangle_hight = canvas_rectangle.getAttribute("height") - 100;
-    
-    //function print for the rectangle - can do in css with stroke (?)
-    /*function draw_rectangle()
-    {
-        const ctx = canvas_rectangle.getContext("2d");
-        ctx.beginPath();
-        ctx.rect(20, 20, rectangle_width, rectangle_hight);
-        ctx.stroke();
-    }*/
-    /**********************************************************************************************/
+/**********************************************************************************************/
 
-    const discs = document.querySelectorAll("#discs")
-    //discs.forEach(item => setLocation)
-    //discs.forEach(item => draw_disc_on_point(item)) - not working need to set location
+// initialize
 
-    //set random location for disc
-    //function set_random_location()
-    //{
+const canvas_rectangle = document.querySelector('#rectangle');
 
-    //}
-    //print disc at his location
+const rectangle_width = canvas_rectangle.getAttribute("width");
+const rectangle_hight = canvas_rectangle.getAttribute("height");
 
-    //randomize starting point for each disc
+let g_state = {
+    has_been_started: false,
+    discs: create_discs_array(),
+};
 
-    function draw_disc_on_point(disc_to_draw,x,y)
-    {
-        const disc_ctx = disc_to_draw.getContext('2d');
-        const disc_radius = disc_to_draw.getAttribute("radius");
-        disc_ctx.beginPath();
-        disc_ctx.arc(x+disc_radius,y+disc_radius, disc_radius, 0, Math.PI * 2, true);
-        disc_ctx.stroke();      
+draw_discs_array();
+
+/**********************************************************************************************/
+
+function create_discs_array() {
+    const radius = 20;
+    let disc_top = new Disc(rectangle_width / 2, radius, radius);
+    let disc_bot = new Disc(rectangle_width / 2, rectangle_hight - radius, radius);
+    let disc_left = new Disc(radius, rectangle_hight / 2, radius);
+    let disc_right = new Disc(rectangle_width - radius, rectangle_hight / 2, radius);
+    return [disc_top, disc_bot, disc_left, disc_right];
+}
+
+function draw_discs_array() {
+    g_state.discs.forEach(element => {
+        if (element.visible) {
+            draw_disc(element);
+        }
+    });
+}
+
+function draw_disc(disc_to_draw) {
+    const rectangle = canvas_rectangle.getContext('2d');
+    rectangle.beginPath();
+    rectangle.arc(disc_to_draw.x, disc_to_draw.y, disc_to_draw.radius, 0, Math.PI * 2, true);
+    rectangle.stroke();
+}
+
+function set_direction(disc)
+{
+    //future
+}
+
+
+/**********************************************************************************************/
+
+//Buttons section
+const btn_start = document.querySelector('#btn_start');
+btn_start.addEventListener('click', handle_start);
+
+const btn_pause = document.querySelector('#btn_pause');
+btn_pause.addEventListener('click', handle_pause);
+
+const btn_reset = document.querySelector('#btn_reset');
+btn_reset.addEventListener('click', handle_reset);
+
+function handle_start() {
+    if (!g_state.has_been_started) {
+        setInterval(() => {
+            draw_discs_array(discs);
+
+        }, 1000)
     }
 
+}
 
-    //discs.forEach(item => draw_disc(item));
-    
+function handle_pause() {
+    alert(btn_pause.getAttribute("id"));
+}
 
-    /**********************************************************************************************/
-    //Buttons section
-    const btn_start = document.querySelector('#btn_start');
-    btn_start.addEventListener('click',handle_start);
-
-    const btn_pause = document.querySelector('#btn_pause');
-    btn_pause.addEventListener('click',handle_pause);
-    
-    const btn_reset = document.querySelector('#btn_reset');
-    btn_reset.addEventListener('click',handle_reset);
-    
-    function handle_start()
-    {
-        alert(btn_start.getAttribute("id"));
-    }
-    
-    function handle_pause()
-    {
-        alert(btn_pause.getAttribute("id"));
-    }
-    
-    function handle_reset()
-    {
-        alert(btn_reset.getAttribute("id"));
-    }
+function handle_reset() {
+    alert(btn_reset.getAttribute("id"));
+}
 
 
 
