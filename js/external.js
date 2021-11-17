@@ -123,9 +123,18 @@ function handle_start() {
 function handle_pause() {
     if (g_state.has_been_started) {
         clearInterval(g_state.interval_handle);
+        g_state.has_been_started = false;
     }
 }
 
 function handle_reset() {
-    alert(btn_reset.getAttribute("id"));
-}
+    clearInterval(g_state.interval_handle);
+
+    g_state.has_been_started = false;
+    g_state.interval_handle = null;
+    g_state.discs = create_discs_array();
+
+    clear_canvas();
+    draw_discs_array();
+};
+
