@@ -1,14 +1,10 @@
 //Todo:
-// 3. summary message.
-// 4. media query / bootstrap for size.
-// 5. design.
-// 6. make code more simple, readable & beautiful.
-// 7. testing with another browser and with phone
-
+// 2. media query & design
+// 3. make code more simple, readable & beautiful.
 
 /**********************************************************************************************/
 
-function Disc(x, y, radius) {  // todo - take out to another file
+function Disc(x, y, radius) { 
     this.origin_x=x;
     this.origin_y=y;
     this.x = x;
@@ -17,7 +13,6 @@ function Disc(x, y, radius) {  // todo - take out to another file
     this.is_visible = true;
     this.x_direction = (Math.round(Math.random()) * 2 - 1);     //positive or negative 
     this.y_direction = (Math.round(Math.random()) * 2 - 1);     //positive or negative
-    // color - should be css?
 }
 
 Disc.prototype.change_direction = function (key) {
@@ -48,11 +43,13 @@ function Rectangle() {
 
 let g_state = {
     has_been_started: false,
+    needs_reset: false,
     rectangle: new Rectangle(),
     discs: create_discs_array(),
     interval_handle: null,
-    timer_milliseconds: null,
-    timer_seconds: null,
+    timer: document.querySelector('#timer'),
+    ticks: null,
+
 }
 
 function create_random_up_to(num) {
@@ -169,34 +166,91 @@ const btn_reset = document.querySelector('#btn_reset');
 btn_reset.addEventListener('click', handle_reset);
 
 function handle_start() {
-    if (!g_state.has_been_started) {
+    if((!g_state.has_been_started) && (!is_timer_empty()))
+    {
+        let tick = 0;
         g_state.has_been_started = true;
-        g_state.timer_seconds = document.querySelector('#timer').value;
-        g_state.timer_milliseconds = g_state.timer_seconds  * 1000;
         g_state.interval_handle = setInterval(() => {
-            if(g_state.timer_seconds>0)
-            {
-                move_discs();
-                check_collision();
-                clear_canvas();
-                draw_discs_array();
-                update_timer();
+            if((!is_timer_over())&&(game_should_continue())) {
+                manage_discs_movement();
+                tick += 10;
+                if(is_milliseconds_full_seconds(tick))
+                {
+                    update_timer();
                 }
-            else 
-            {
-                handle_pause();                
+            }
+            else {
+                handle_pause();
+                summarize_message(tick);
             }
         }, 10)
     }
+}
 
+function manage_discs_movement() {
+    move_discs();
+    check_collision();
+    clear_canvas();
+    draw_discs_array();
+}
+
+function is_timer_empty() {
+    if (g_state.timer.value==="" || g_state.timer.valueAsNumber<0)
+    {
+        window.alert("Please fill the timer field with a positive value");
+        return true;
+    }
+    return false;
+}
+
+function game_should_continue() {
+    let visible_discs_Counter=count_visible_discs();
+
+    if(visible_discs_Counter>1){
+        return true;
+    }
+    return false;
+}
+
+function count_visible_discs() {
+    let visible_discs_Counter = 0;
+
+    g_state.discs.forEach(disc => {
+        if(disc.is_visible===true)
+        {
+            visible_discs_Counter++;
+        }
+    })
+
+    return visible_discs_Counter;
+}
+
+function is_timer_over() {
+    if(g_state.timer.valueAsNumber>0)
+    {
+        return false;
+    }
+    return true;
 }
 
 function update_timer() {
-    g_state.timer_milliseconds -= 10;
-    if(g_state.timer_milliseconds%1000===0)
-    {
-        g_state.timer_seconds.x.setAttribute("value", toString(g_state.timer_milliseconds/1000));
+    let timer_update = g_state.timer.value - 1;
+    g_state.timer.valueAsNumber=timer_update;
+}
+
+function summarize_message(ticks) {
+    const discs_remain = count_visible_discs();
+    const seconds_passed= ticks/1000;
+    const message = "After " + seconds_passed + " seconds - " + discs_remain + " discs remains visible";
+
+    window.alert(message);
+}
+
+function is_milliseconds_full_seconds(tick){
+    if(tick%1000===0) {
+        return true;
     }
+    return false;
 }
 
 function handle_pause() {
