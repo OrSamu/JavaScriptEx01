@@ -1,7 +1,3 @@
-//Todo:
-// 2. media query & design
-// 3. make code more simple, readable & beautiful.
-
 /**********************************************************************************************/
 
 function Disc(x, y, radius) { 
@@ -76,8 +72,6 @@ function reset_discs_state() {
     })
 }
 
-draw_discs_array();
-
 /**********************************************************************************************/
 
 function draw_discs_array() {
@@ -87,6 +81,8 @@ function draw_discs_array() {
         }
     });
 }
+
+draw_discs_array();
 
 function draw_disc(disc_to_draw) {
     g_state.rectangle.context.beginPath();
@@ -98,9 +94,6 @@ function set_direction(disc) {
     //future
 }
 
-//todo -
-//add discs collection
-//make it more nice looking
 function move_discs() {
     g_state.discs.forEach(element => {
         if (element.is_visible) {
@@ -146,8 +139,6 @@ function check_collision() {
         }
     })
 }
-
-/**********************************************************************************************/
 
 function clear_canvas() {
     g_state.rectangle.context.clearRect(0, 0, g_state.rectangle.width, g_state.rectangle.height);
@@ -271,3 +262,9 @@ function handle_reset() {
     draw_discs_array();
 };
 
+window.onbeforeunload = confirmExit;
+
+function confirmExit(){
+    alert("confirm exit is being called");
+    return false;
+}
